@@ -245,7 +245,7 @@ def get_TVD(Pr,Pr_throry):
 
 @jit(nopython=True)
 def get_tau_i_3(a,b,c,p):
-    #(1+ax)(1+bx)(1+cx)-1/p
+    #resolve (1+ax)(1+bx)(1+cx)-1/p = 0
     A = a * b * c
     B = a * b + b * c + c * a
     C = a + b + c
@@ -288,7 +288,7 @@ def get_tau(a,b,Pr_Pi_0):
 
 @njit(cache=True)
 def eff_corr(eff, N):
-    
+    #死时间效率修正
     L = 2 ** N
     events = _click_events(N)
     Trans = np.zeros((L, L), dtype = np.float64)
@@ -335,69 +335,6 @@ def eff_corr(eff, N):
                                     Trans[i][j] = 0
                                     break
                                     
-                            if events[j][k - 1] == 0:
-                                if events[j][k] == 1:
-                                    Trans[i][j] = Trans[i][j] * 1
-                                if events[j][k] == 0:
-                                    Trans[i][j] = 0
-                                    break         
-
-    return Trans.T
-
-@njit(cache=True)
-def eta_eff_corr(eta, eff, N):
-
-    L = 2 ** N
-    events = _click_events(N)
-    Trans = np.zeros((L, L), dtype = np.float64)
-    Trans[0][0] = 1
-    for i in range(1, L):
-        for j in range(1, L):
-            if (i|j) == i:
-                index_i = np.argwhere(events[i] == 1)
-                for k in index_i:
-
-                    1
-
-
-                if events[j][index_i[0]] == 1:#排除掉开头不是1的子事件
-                    Trans[i][j] = 1
-
-                    for k in index_i[1:]:#计算i to j 的概率
-
-                        if events[i][k - 1] == 1:
-
-                            if events[j][k - 1] == 1:
-                                if events[j][k] == 1:
-                                    Trans[i][j] = Trans[i][j] * eff
-                                if events[j][k] == 0:
-                                    Trans[i][j] = Trans[i][j] * (1 - eff)
-
-                            #模型1
-                            if events[j][k - 1] == 0:
-                                if events[j][k] == 1:
-                                    Trans[i][j] = Trans[i][j] * eff
-                                if events[j][k] == 0:
-                                    Trans[i][j] = Trans[i][j] * (1 - eff)
-
-                            #模型2
-                            # if events[j][k - 1] == 0:
-                            #     if events[j][k] == 1:
-                            #         Trans[i][j] = Trans[i][j] * 1
-                            #     if events[j][k] == 0:
-                            #         Trans[i][j] = 0
-                            #         break
-
-                        if events[i][k - 1] == 0:
-
-                            if events[j][k - 1] == 1:
-                                if events[j][k] == 1:
-                                    Trans[i][j] = 0
-                                    break
-                                if events[j][k] == 0:
-                                    Trans[i][j] = 0
-                                    break
-
                             if events[j][k - 1] == 0:
                                 if events[j][k] == 1:
                                     Trans[i][j] = Trans[i][j] * 1
